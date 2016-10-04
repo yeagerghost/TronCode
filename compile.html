@@ -31,7 +31,8 @@ var y0 = ( canvas.height - NUM_CELLS_VERTICAL * cellSize ) /2;
 
 var grid = create2DArray( NUM_CELLS_HORIZONTAL, NUM_CELLS_VERTICAL );
 var CELL_EMPTY = 0;
-var CELL_OCCUPIED = 1;
+var CELL_OCCUPIED_LC1 = 1;
+var CELL_OCCUPIED_LC2 = 2;
 var GAME_OVER = 0;
 
 // Current position and direction of light cycle 1
@@ -48,7 +49,8 @@ var lightCycle2_vx = 0; // positive for right
 var lightCycle2_vy = 1; // positive for down
 var lightCycle2_alive = true;
 
-grid[lightCycle1_x][lightCycle1_y] = CELL_OCCUPIED; // to mark the initial grid cell as occupied
+grid[lightCycle1_x][lightCycle1_y] = CELL_OCCUPIED_LC1; // to mark the initial grid cell as occupied
+grid[lightCycle2_x][lightCycle2_y] = CELL_OCCUPIED_LC2; // to mark the initial grid cell as occupied
 
 function keyDownHandler(e) {
 
@@ -102,12 +104,18 @@ var redraw = function() {
 	C.fillStyle = "#000000";
 	// C.clearRect(0, 0, canvas.width, canvas.height);
 	C.fillRect(0,0,canvas.width,canvas.height);
-	C.fillStyle = "#00ffff";
+	//C.fillStyle = "#00ffff";
 
 	for ( var i = 0; i < NUM_CELLS_HORIZONTAL; ++i ) {
 		for ( var j = 0; j < NUM_CELLS_VERTICAL; ++j ) {
-			if ( grid[i][j] === CELL_OCCUPIED )
-					C.fillRect( i*cellSize+1, j*cellSize+1, cellSize-2, cellSize-2 );
+			if ( grid[i][j] === CELL_OCCUPIED_LC1 ) {
+				C.fillStyle = "#00ffff";
+				C.fillRect( i*cellSize+1, j*cellSize+1, cellSize-2, cellSize-2 );
+			}
+			if ( grid[i][j] === CELL_OCCUPIED_LC2 ) {
+				C.fillStyle = "#ffff00";
+				C.fillRect( i*cellSize+1, j*cellSize+1, cellSize-2, cellSize-2 );
+			}
 					//C.fillRect(canvas.width-(x0+i*cellSize-1), canvas.height-(y0+j*cellSize-1), cellSize-2, cellSize-2 );
 		}
 	}
@@ -178,13 +186,14 @@ var advance = function() {
 		if (
 			new2_x < 0 || new2_x >= NUM_CELLS_HORIZONTAL
 			|| new2_y < 0 || new2_y >= NUM_CELLS_VERTICAL
-			|| grid[new2_x][new2_y] === CELL_OCCUPIED
+			|| grid[new2_x][new2_y] === CELL_OCCUPIED_LC1
+			|| grid[new2_x][new2_y] === CELL_OCCUPIED_LC2
 		) {
 			lightCycle2_alive = false; //window.alert("Light Cycle2 dies"); 
 			startover();
 		}
 		else {
-			grid[new2_x][new2_y] = CELL_OCCUPIED;
+			grid[new2_x][new2_y] = CELL_OCCUPIED_LC2;
 			lightCycle2_x = new2_x;
 			lightCycle2_y = new2_y;
 		}
@@ -201,13 +210,14 @@ var advance = function() {
 		if (
 			new1_x < 0 || new1_x >= NUM_CELLS_HORIZONTAL
 			|| new1_y < 0 || new1_y >= NUM_CELLS_VERTICAL
-			|| grid[new1_x][new1_y] === CELL_OCCUPIED
+			|| grid[new1_x][new1_y] === CELL_OCCUPIED_LC1
+			|| grid[new1_x][new1_y] === CELL_OCCUPIED_LC2
 		) {
 			lightCycle1_alive = false; // window.alert("Light Cycle1 dies");
 			startover();
 		}
 		else {
-			grid[new1_x][new1_y] = CELL_OCCUPIED;
+			grid[new1_x][new1_y] = CELL_OCCUPIED_LC1;
 			lightCycle1_x = new1_x;
 			lightCycle1_y = new1_y;
 		}
