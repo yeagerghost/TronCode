@@ -2,6 +2,9 @@
 <body>
 <h1>Tron Light Cycles (Motocyclettes de lumi&egrave;re de Tron)</h1>
 
+<p id="scoreBoxLC1">Light Cycle1 score = 0</p>
+<p id="scoreBoxLC2">Light Cycle2 score = 0</p>
+
 <canvas id="myCanvas" width="700" height="700" style="border:2px solid #000000;"></canvas>
 
 <script>
@@ -18,6 +21,9 @@ var create2DArray = function( numColumns, numRows ) {
 	return array;
 }
 
+
+var lc1_color = "#00ffff";
+var lc2_color = "#ffff00";
 var canvas = document.getElementById("myCanvas");
 var C = canvas.getContext("2d");
 var canvas_rectangle = canvas.getBoundingClientRect();
@@ -33,6 +39,8 @@ var grid = create2DArray( NUM_CELLS_HORIZONTAL, NUM_CELLS_VERTICAL );
 var CELL_EMPTY = 0;
 var CELL_OCCUPIED_LC1 = 1;
 var CELL_OCCUPIED_LC2 = 2;
+var lc1_score=0;
+var lc2_score=0;
 var GAME_OVER = 0;
 
 // Current position and direction of light cycle 1
@@ -100,6 +108,14 @@ function keyDownHandler(e) {
 
 document.onkeydown = keyDownHandler;
 
+var displayScore = function (){
+	var scoreOfLC1 = document.getElementById("scoreBoxLC1");
+	var scoreOfLC2 = document.getElementById("scoreBoxLC2");
+	scoreOfLC1.innerHTML = "Light Cycle1 score = " + lc1_score;
+	scoreOfLC2.innerHTML = "Light Cycle2 score = " + lc2_score;
+}
+
+
 var redraw = function() {
 	C.fillStyle = "#000000";
 	// C.clearRect(0, 0, canvas.width, canvas.height);
@@ -109,11 +125,11 @@ var redraw = function() {
 	for ( var i = 0; i < NUM_CELLS_HORIZONTAL; ++i ) {
 		for ( var j = 0; j < NUM_CELLS_VERTICAL; ++j ) {
 			if ( grid[i][j] === CELL_OCCUPIED_LC1 ) {
-				C.fillStyle = "#00ffff";
+				C.fillStyle = lc1_color; // "#00ffff";
 				C.fillRect( i*cellSize+1, j*cellSize+1, cellSize-2, cellSize-2 );
 			}
 			if ( grid[i][j] === CELL_OCCUPIED_LC2 ) {
-				C.fillStyle = "#ffff00";
+				C.fillStyle = lc2_color; // "#ffff00";
 				C.fillRect( i*cellSize+1, j*cellSize+1, cellSize-2, cellSize-2 );
 			}
 					//C.fillRect(canvas.width-(x0+i*cellSize-1), canvas.height-(y0+j*cellSize-1), cellSize-2, cellSize-2 );
@@ -147,6 +163,7 @@ var redraw = function() {
 
 var startover = function() {
 
+	displayScore();
 //	window.alert("messag");
 	C.fillStyle = "#000000"; 
 	C.fillRect(0,0,canvas.width,canvas.height); 
@@ -176,7 +193,7 @@ var startover = function() {
 
 var advance = function() {
 
-	if (GAME_OVER) exit;
+	if (GAME_OVER) return;
 
 	if ( lightCycle2_alive ) {
 		var new2_x = lightCycle2_x + lightCycle2_vx;
@@ -190,6 +207,7 @@ var advance = function() {
 			|| grid[new2_x][new2_y] === CELL_OCCUPIED_LC2
 		) {
 			lightCycle2_alive = false; //window.alert("Light Cycle2 dies"); 
+			lc1_score++; //increment score of LC1 since LC2 died
 			startover();
 		}
 		else {
@@ -214,6 +232,7 @@ var advance = function() {
 			|| grid[new1_x][new1_y] === CELL_OCCUPIED_LC2
 		) {
 			lightCycle1_alive = false; // window.alert("Light Cycle1 dies");
+			lc2_score++; //increment score of LC2 since LC1 died
 			startover();
 		}
 		else {
@@ -257,6 +276,7 @@ var run = function() {
 //setInterval( function() { run(); }, 100 /*milliseconds*/ );
 
 </script>
+
 
 </body>
 </html>
